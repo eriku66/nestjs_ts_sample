@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -11,23 +11,74 @@ export class UsersService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  /**
+   * ユーザーを作成する
+   * @param createUserDto
+   * @returns
+   */
+  async create(createUserDto: CreateUserDto): Promise<{ message: string }> {
+    await this.userRepository
+      .save({
+        name: createUserDto.name,
+      })
+      .catch((e) => {
+        throw new InternalServerErrorException(
+          '[${e.message}] アカウントの登録に失敗しました。'
+        );
+      });
+    return { message: 'アカウントの登録に成功しました。' };
   }
 
-  findAll() {
-    return `This action returns all users`;
+  /**
+   * ユーザーを全件取得する
+   * @returns
+   */
+  async findAll(): Promise<User[]> {
+    return await this.userRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  /**
+   * ユーザーを1件取得する
+   * @param id
+   * @returns
+   */
+  async findOne(id: number): Promise<User> {
+    return await this.userRepository.findOneBy({
+      id: id,
+    });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+
+  /**
+   * ユーザーを更新する
+   * @param id
+   * @param updateUserDto
+   * @returns
+   */
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    await this.userRepository
+      .update(id, {
+        name: updateUserDto.name,
+      })
+      .catch((e) => {
+        throw new InternalServerErrorException(
+          '[${e.message}] アカウントの更新に失敗しました。'
+        );
+      });
+    return { message: 'アカウント(ID: ${id})の更新に成功しました。' };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  /**
+   * ユーザーを削除する
+   * @param id
+   * @returns
+   */
+  async remove(id: number) {
+    await this.userRepository.delete(id).catch((e) => {
+      throw new InternalServerErrorException(
+        '[${e.message}] アカウント(ID: ${id})の削除に失敗しました。'
+      );
+    });
+    return { message: 'アカウント(ID: ${id})の削除に成功しました。' };
   }
 }
