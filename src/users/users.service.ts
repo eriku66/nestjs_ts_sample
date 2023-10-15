@@ -23,7 +23,7 @@ export class UsersService {
       })
       .catch((e) => {
         throw new InternalServerErrorException(
-          '[${e.message}] アカウントの登録に失敗しました。'
+          `[${e.message}] アカウントの登録に失敗しました。`
         );
       });
     return { message: 'アカウントの登録に成功しました。' };
@@ -62,10 +62,10 @@ export class UsersService {
       })
       .catch((e) => {
         throw new InternalServerErrorException(
-          '[${e.message}] アカウントの更新に失敗しました。'
+          `[${e.message}] アカウントの更新に失敗しました。`
         );
       });
-    return { message: 'アカウント(ID: ${id})の更新に成功しました。' };
+    return { message: `アカウント(ID: ${id})の更新に成功しました。` };
   }
 
   /**
@@ -76,9 +76,9 @@ export class UsersService {
   async remove(id: number) {
     await this.userRepository.delete(id).catch((e) => {
       throw new InternalServerErrorException(
-        '[${e.message}] アカウント(ID: ${id})の削除に失敗しました。'
+        `[${e.message}] アカウント(ID: ${id})の削除に失敗しました。`
       );
     });
-    return { message: 'アカウント(ID: ${id})の削除に成功しました。' };
+    return { message: `アカウント(ID: ${id})の削除に成功しました。` };
   }
 }
